@@ -1,5 +1,6 @@
 #ifndef SENSORYOVERLOAD_CONTENT_H
 #define SENSORYOVERLOAD_CONTENT_H
+
 #include <nlohmann/json.hpp>
 
 class Parseable {
@@ -10,7 +11,7 @@ public:
 
 class Interactable final : Parseable {
 public:
-  std::string map_char_;
+  char map_char_;
   std::string sound_id_;
   std::string interact_text_;
   int8_t damage_;

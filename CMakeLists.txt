@@ -13,9 +13,12 @@ FetchContent_Declare(json
 FetchContent_MakeAvailable(json)
 
 add_executable(SensoryOverload src/main.cpp
-        src/world/world_state.h
+        src/world/world.h
         src/data/content.h
-        src/data/content.cc)
+        src/data/content.cc
+        src/consts.h
+        src/data/loader.h
+        src/world/world.cc)
 
 target_link_libraries(SensoryOverload PRIVATE nlohmann_json::nlohmann_json)
 target_link_options(SensoryOverload PRIVATE
