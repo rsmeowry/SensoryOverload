@@ -1,0 +1,8 @@
+[
+  {
+    "id": "deaf",
+    "interact_text": "",
+    "sound_pitch": 0.5,
+    "lowpass_param": 0.2
+  }
+]

@@ -1,0 +1,11 @@
+[
+  {
+    "id": "Walker",
+    "x": 4,
+    "y": 4,
+    "interact_text": "A collossal breathing figure stands in front of you",
+    "max_health": 25,
+    "move_radius": 2,
+    "damage": 12
+  }
+]

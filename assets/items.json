@@ -1,0 +1,9 @@
+[
+  {
+    "id": "crowbar",
+    "name": "Crowbar",
+    "description": "A sturdy crowbar",
+    "is_weapon": true,
+    "damage": 17
+  }
+]

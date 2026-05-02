@@ -21,7 +21,7 @@ private:
 public:
   std::vector<LivingMob> mobs_;
 
-  void load(DataLoader *loader, std::string map) {}
+  void load(DataRegistry *loader, std::string map) {}
   Interactable * obj_at(int8_t x, int8_t y);
 };
 

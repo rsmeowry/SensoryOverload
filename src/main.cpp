@@ -1,6 +1,9 @@
+#include "data/loader.h"
+
 #include <iostream>
 
 int main() {
-  std::cout << "Hello, World!" << std::endl;
+  DataRegistry registry;
+  registry.load();
   return 0;
 }
