@@ -5,5 +5,12 @@
     "description": "A sturdy crowbar",
     "is_weapon": true,
     "damage": 17
+  },
+  {
+    "id": "fists",
+    "name": "Fists",
+    "description": "Your mech's fists",
+    "is_weapon": true,
+    "damage": 10
   }
 ]

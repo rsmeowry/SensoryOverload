@@ -25,6 +25,7 @@ struct SensorState {
 
 struct Inventory {
   std::vector<Item*> items_;
+  uint8_t active_;
 };
 
 struct PlayerState {

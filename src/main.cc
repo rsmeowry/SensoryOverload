@@ -41,8 +41,9 @@ int main() {
     nlohmann::json setup_json;
     setup_str >> setup_json;
     state.player_.load(setup_json);
+    state.player_.inventory_.items_.emplace_back(registry.items_[setup_json.value("starting_item", "fists")]);
   } else {
-    std::cerr << "Failed to load setup.json" << std::endl;
+    std::cerr << "failed to load setup.json" << std::endl;
   }
 
   InputSystem input_sys;
@@ -107,11 +108,88 @@ int main() {
   });
 
   input_sys.registerCommand("interact", [](const std::vector<std::string>& args, GlobalState& state, MapData& map, DataRegistry& registry) {
-    std::cout << "BOOP" << std::endl;
+    auto& t = state.player_.transform_;
+    auto t_x = t.x_;
+    auto t_y = t.y_;
+    if (t.facing_ == North) t_y -= 1;
+    else if (t.facing_ == South) t_y += 1;
+    else if (t.facing_ == West) t_x -= 1;
+    else if (t.facing_ == East) t_x += 1;
+
+    t_y = std::clamp(t_y, static_cast<uint8_t>(0), map.size_);
+    t_x = std::clamp(t_x, static_cast<uint8_t>(0), map.size_);
+
+    std::string text_to_display = "";
+    bool found_mob = false;
+
+    for (auto& mob : map.mobs_) {
+      if (mob.alive_) {
+        for (auto& cmp : mob.components_) {
+          if (auto m = dynamic_cast<Moveable*>(cmp.get())) {
+            if (m->x_ == t_x && m->y_ == t_y) {
+              text_to_display = mob.mob_.interact_text_;
+              found_mob = true;
+              break;
+            }
+          }
+        }
+      }
+      if (found_mob) break;
+    }
+
+    if (!found_mob) {
+      auto obj = map.objAt(t_x, t_y);
+      text_to_display = obj->interact_text_;
+    }
+
+    if (!state.player_.sensors_.current_effect_.empty()) {
+      auto it = registry.effects_.find(state.player_.sensors_.current_effect_);
+      if (it != registry.effects_.end() && !it->second->interact_text_.empty()) {
+        text_to_display = it->second->interact_text_;
+      }
+    }
+
+    std::cout << text_to_display << std::endl;
   });
 
   input_sys.registerCommand("attack", [](const std::vector<std::string>& args, GlobalState& state, MapData& map, DataRegistry& registry) {
-    std::cout << "ATTACKED" << std::endl;
+    auto& t = state.player_.transform_;
+    auto t_x = t.x_;
+    auto t_y = t.y_;
+    if (t.facing_ == North) t_y -= 1;
+    else if (t.facing_ == South) t_y += 1;
+    else if (t.facing_ == West) t_x -= 1;
+    else if (t.facing_ == East) t_x += 1;
+
+    t_y = std::clamp(t_y, static_cast<uint8_t>(0), map.size_);
+    t_x = std::clamp(t_x, static_cast<uint8_t>(0), map.size_);
+
+    std::string text_to_display = "";
+    bool found_mob = false;
+
+    for (auto& mob : map.mobs_) {
+      if (mob.alive_) {
+        for (auto& cmp : mob.components_) {
+          if (auto m = dynamic_cast<Moveable*>(cmp.get())) {
+            if (m->x_ == t_x && m->y_ == t_y) {
+              std::cout << "you swing and hit something in front of you" << std::endl;
+              for (auto& c: mob.components_) {
+                if (auto h = dynamic_cast<Healable*>(c.get())) {
+                  h->current_ -= state.player_.inventory_.items_[state.player_.inventory_.active_]->damage_;
+                }
+              }
+              found_mob = true;
+              break;
+            }
+          }
+        }
+      }
+      if (found_mob) break;
+    }
+
+    if (!found_mob) {
+      std::cout << "you swing but reach nothing" << std::endl;
+    }
   });
 
   input_sys.registerCommand("inventory", [](const std::vector<std::string>& args, GlobalState& state, MapData& map, DataRegistry& registry) {

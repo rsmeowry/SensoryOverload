@@ -26,7 +26,7 @@ struct Moveable: Component {
 };
 
 struct Healable: Component {
-  uint8_t current_;
+  int8_t current_;
   uint8_t max_;
   void act(LivingMob* self, MapData* map, DataRegistry* data) override;
 };
