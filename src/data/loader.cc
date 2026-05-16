@@ -2,6 +2,7 @@
 #include "../consts.h"
 
 #include <fstream>
+#include <functional>
 
 template <typename TKey, typename TParseable>
 std::unordered_map<TKey, TParseable*> parseJsons(std::ifstream stream, std::function<TParseable*()> fac, std::function<TKey(TParseable*)> key_getter) {

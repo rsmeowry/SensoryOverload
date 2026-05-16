@@ -1,0 +1,9 @@
+{
+  "player": {
+    "x": 2,
+    "y": 2,
+    "facing": "South",
+    "health": 100,
+    "max_health": 100
+  }
+}

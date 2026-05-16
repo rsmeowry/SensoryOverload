@@ -1,6 +1,10 @@
 #include "world.h"
 
 #include <iostream>
+#include <sstream>
+#include <ranges>
+#include "../data/loader.h"
+#include "../world/mob.h"
 
 void MapData::load(DataRegistry *loader, std::string map) {
   std::istringstream str(map);
@@ -20,8 +24,8 @@ void MapData::load(DataRegistry *loader, std::string map) {
   }
 
   for (const auto val : loader->mobs_ | std::views::values) {
-    LivingMob living(val->map_x_, val->map_y_, *val);
-    mobs_.emplace_back(living);
+    LivingMob living(*val);
+    mobs_.emplace_back(*val);
   }
 }
 Interactable *MapData::obj_at(const int8_t x, const int8_t y) const {
