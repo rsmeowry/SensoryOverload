@@ -206,7 +206,11 @@ int main() {
   });
 
   input_sys.registerCommand("inventory", [](const std::vector<std::string>& args, GlobalState& state, MapData& map, DataRegistry& registry) {
-    std::cout << "INV" << std::endl;
+    auto& inv = state.player_.inventory_;
+    for (size_t i = 0; i < inv.items_.size(); ++i) {
+      std::cout << i << " " << inv.items_[i]->name_ << " - " << inv.items_[i]->description_ << std::endl;
+    }
+    std::cout << "equipped index: " << static_cast<int>(inv.active_) << std::endl;
   });
 
   input_sys.registerCommand("examine", [](const std::vector<std::string>& args, GlobalState& state, MapData& map, DataRegistry& registry) {
@@ -221,8 +225,17 @@ int main() {
       std::cout << "no such item" << std::endl;
       return;
     }
-    auto i = std::stoi(args[0]);
-    std::cout << "EQUIPPED " << i << std::endl;
+    try {
+      int i = std::stoi(args[0]);
+      if (i >= 0 && i < state.player_.inventory_.items_.size()) {
+        state.player_.inventory_.active_ = static_cast<uint8_t>(i);
+        std::cout << "equipped index " << i << std::endl;
+      } else {
+        std::cout << "no such item" << std::endl;
+      }
+    } catch (...) {
+      std::cout << "no such item" << std::endl;
+    }
   });
 
   input_sys.registerAlias("inv", "inventory");
