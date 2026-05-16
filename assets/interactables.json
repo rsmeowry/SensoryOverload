@@ -22,5 +22,13 @@
     "damage": 0,
     "apply_effect": "deaf",
     "give_item": ""
+  },
+  {
+    "map_char": "_",
+    "sound_id": "",
+    "interact_text": "There's nothing in front of you",
+    "damage": 0,
+    "apply_effect": "",
+    "give_item": ""
   }
 ]

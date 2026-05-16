@@ -12,7 +12,7 @@ FetchContent_Declare(json
 )
 FetchContent_MakeAvailable(json)
 
-add_executable(SensoryOverload src/main.cpp
+add_executable(SensoryOverload src/main.cc
         src/world/world.h
         src/data/content.h
         src/data/content.cc

@@ -21,8 +21,8 @@ private:
 public:
   std::vector<LivingMob> mobs_;
 
-  void load(DataRegistry *loader, std::string map) {}
-  Interactable * obj_at(int8_t x, int8_t y);
+  void load(DataRegistry *loader, std::string map);
+  Interactable * obj_at(int8_t x, int8_t y) const;
 };
 
 #endif // SENSORYOVERLOAD_WORLD_STATE_H
