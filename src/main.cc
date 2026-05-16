@@ -141,6 +141,18 @@ int main() {
     if (!found_mob) {
       auto obj = map.objAt(t_x, t_y);
       text_to_display = obj->interact_text_;
+
+      if (!obj->give_item_.empty()) {
+        auto item_id = obj->give_item_;
+        if (registry.items_.find(item_id) != registry.items_.end()) {
+          state.player_.inventory_.items_.push_back(registry.items_[item_id]);
+          std::cout << "you obtained '" << registry.items_[item_id]->name_ << "'" << std::endl;
+        }
+
+        if (registry.interact_by_char_.find('_') != registry.interact_by_char_.end()) {
+          map.setObjAt(t_x, t_y, registry.interact_by_char_['_']);
+        }
+      }
     }
 
     if (!state.player_.sensors_.current_effect_.empty()) {

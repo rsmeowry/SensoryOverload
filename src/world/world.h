@@ -17,6 +17,7 @@ public:
 
   void load(DataRegistry *loader, std::string map);
   Interactable * objAt(uint8_t x, uint8_t y) const;
+  void setObjAt(uint8_t x, uint8_t y, Interactable* obj);
 };
 
 struct GlobalState {

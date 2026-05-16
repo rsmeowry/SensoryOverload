@@ -32,3 +32,9 @@ void MapData::load(DataRegistry *loader, std::string map) {
 Interactable *MapData::objAt(const uint8_t x, const uint8_t y) const {
   return map_.at(y).at(x);
 }
+
+void MapData::setObjAt(uint8_t x, uint8_t y, Interactable* obj) {
+  if (y < map_.size() && x < map_[y].size()) {
+    map_[y][x] = obj;
+  }
+}

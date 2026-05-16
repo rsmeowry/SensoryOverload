@@ -35,5 +35,14 @@
     "apply_effect": "",
     "give_item": "",
     "solid": false
+  },
+  {
+    "map_char": "C",
+    "sound_id": "",
+    "interact_text": "You pick up a rusty crowbar",
+    "damage": 0,
+    "apply_effect": "",
+    "give_item": "crowbar",
+    "solid": false
   }
 ]

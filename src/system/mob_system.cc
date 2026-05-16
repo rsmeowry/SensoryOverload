@@ -52,7 +52,7 @@ void MobSystem::update(MapData& map, GlobalState& state, DataRegistry& registry)
     if (!valid_moves.empty()) {
       std::uniform_int_distribution<> dist(0, valid_moves.size() - 1);
       Pos next_move = valid_moves[dist(gen)];
-      
+
       if (next_move.x == state.player_.transform_.x_ && next_move.y == state.player_.transform_.y_) {
         int base_damage = mob.mob_.damage_;
         std::uniform_int_distribution<> dmg_dist(
