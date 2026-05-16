@@ -22,6 +22,8 @@ std::string dirToStr(Direction dir) {
     case East:
       return "east";
       break;
+    default:
+      return "";
   }
 }
 
@@ -58,11 +60,21 @@ int main() {
   
   input_sys.registerCommand("walk", [](const std::vector<std::string>& args, GlobalState& state, MapData& map, DataRegistry& registry) {
     auto& t = state.player_.transform_;
-    if (t.facing_ == North) t.y_ -= 1;
-    else if (t.facing_ == South) t.y_ += 1;
-    else if (t.facing_ == West) t.x_ -= 1;
-    else if (t.facing_ == East) t.x_ += 1;
-    std::cout << "you step one tile forward" << std::endl;
+    auto t_x = t.x_;
+    auto t_y = t.y_;
+    if (t.facing_ == North) t_y -= 1;
+    else if (t.facing_ == South) t_y += 1;
+    else if (t.facing_ == West) t_x -= 1;
+    else if (t.facing_ == East) t_x += 1;
+    t_y = std::clamp(t_y, static_cast<uint8_t>(0), map.size_);
+    t_x = std::clamp(t_x, static_cast<uint8_t>(0), map.size_);
+    if (map.objAt(t_x, t_y)->solid_) {
+      std::cout << "something blocks your way" << std::endl;
+    } else {
+      t.x_ = t_x;
+      t.y_ = t_y;
+      std::cout << "you step one tile forward" << std::endl;
+    }
   });
 
   input_sys.registerCommand("right", [](const std::vector<std::string>& args, GlobalState& state, MapData& map, DataRegistry& registry) {

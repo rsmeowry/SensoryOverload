@@ -2,6 +2,7 @@
 
 #include <iostream>
 void Interactable::load(nlohmann::json &obj) {
+  solid_ = obj["solid"].get<bool>();
   map_char_ = obj["map_char"].get<std::string>()[0];
   sound_id_ = obj["sound_id"].get<std::string>();
   interact_text_ = obj["interact_text"].get<std::string>();

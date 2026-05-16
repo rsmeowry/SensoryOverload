@@ -22,12 +22,13 @@ void MapData::load(DataRegistry *loader, std::string map) {
     y++;
     this->map_.emplace_back(interactables);
   }
+  size_ = y;
 
   for (const auto val : loader->mobs_ | std::views::values) {
     LivingMob living(*val);
     mobs_.emplace_back(*val);
   }
 }
-Interactable *MapData::objAt(const int8_t x, const int8_t y) const {
+Interactable *MapData::objAt(const uint8_t x, const uint8_t y) const {
   return map_.at(y).at(x);
 }

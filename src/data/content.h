@@ -12,6 +12,7 @@ public:
 class Interactable final : public Parseable {
 public:
   char map_char_;
+  bool solid_;
   std::string sound_id_;
   std::string interact_text_;
   int8_t damage_;

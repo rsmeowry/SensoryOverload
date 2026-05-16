@@ -13,9 +13,10 @@ private:
   std::vector<std::vector<Interactable *>> map_;
 public:
   std::vector<LivingMob> mobs_;
+  uint8_t size_;
 
   void load(DataRegistry *loader, std::string map);
-  Interactable * objAt(int8_t x, int8_t y) const;
+  Interactable * objAt(uint8_t x, uint8_t y) const;
 };
 
 struct GlobalState {
