@@ -55,6 +55,7 @@ int main() {
     std::cout << "attack - attack the obj in front" << std::endl;
     std::cout << "inventory - check your inventory" << std::endl;
     std::cout << "equip <idx> - equip item at index" << std::endl;
+    std::cout << "examine - check your status" << std::endl;
     std::cout << "quit - give up" << std::endl;
   });
   
@@ -74,6 +75,16 @@ int main() {
       t.x_ = t_x;
       t.y_ = t_y;
       std::cout << "you step one tile forward" << std::endl;
+      auto obj = map.objAt(t_x, t_y);
+      if (!obj->apply_effect_.empty() && obj->apply_effect_time_ > 0) {
+        state.player_.sensors_.current_effect_ = obj->apply_effect_;
+        state.player_.sensors_.effect_duration_ = obj->apply_effect_time_;
+        std::cout << "you feel like there's something wrong with your sensors" << std::endl;
+      }
+      if (obj->damage_ != 0) {
+        state.player_.health_.current_ -= obj->damage_;
+        std::cout << "you feel a burst of pain" << std::endl;
+      }
     }
   });
 
@@ -107,6 +118,13 @@ int main() {
     std::cout << "INV" << std::endl;
   });
 
+  input_sys.registerCommand("examine", [](const std::vector<std::string>& args, GlobalState& state, MapData& map, DataRegistry& registry) {
+    std::cout << "HEALTH: " << static_cast<int>(state.player_.health_.current_) << "/" << static_cast<int>(state.player_.health_.max_) << std::endl;
+    std::cout << "SENSORS: " << state.player_.sensors_.current_effect_ << " : " << state.player_.sensors_.effect_duration_ << " T. LEFT" << std::endl;
+    std::cout << "POS: " << static_cast<int>(state.player_.transform_.x_) << ";" << static_cast<int>(state.player_.transform_.y_) << std::endl;
+    std::cout << "FORWARD: " << dirToStr(state.player_.transform_.facing_) << std::endl;
+ });
+
   input_sys.registerCommand("equip", [](const std::vector<std::string>& args, GlobalState& state, MapData& map, DataRegistry& registry) {
     if (args.size() != 1) {
       std::cout << "no such item" << std::endl;
@@ -121,9 +139,8 @@ int main() {
   input_sys.registerAlias("int", "interact");
   input_sys.registerAlias("atk", "attack");
 
-  std::cout << "beginning!" << std::endl;
-  std::cout << "you start at (" << (int)state.player_.transform_.x_ << ", " << (int)state.player_.transform_.y_ << ") with " << (int)state.player_.health_.current_ << " HP" << std::endl;
-  
+  std::cout << "your mission begins" << std::endl;
+
   bool running = true;
   while (running && state.player_.isAlive()) {
     std::cout << "> ";
@@ -142,6 +159,14 @@ int main() {
       for (auto& mob : map.mobs_) {
         if (mob.alive_) {
           mob.act(&map, &registry);
+        }
+      }
+      
+      if (state.player_.sensors_.effect_duration_ > 0) {
+        state.player_.sensors_.effect_duration_--;
+        if (state.player_.sensors_.effect_duration_ == 0) {
+          std::cout << "your sensors return to normal." << std::endl;
+          state.player_.sensors_.current_effect_ = "";
         }
       }
     }

@@ -17,6 +17,7 @@ public:
   std::string interact_text_;
   int8_t damage_;
   std::string apply_effect_;
+  int8_t apply_effect_time_ = 0;
   std::string give_item_;
 
   void load(nlohmann::json &obj) override;

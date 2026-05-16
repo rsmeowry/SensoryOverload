@@ -8,6 +8,7 @@ void Interactable::load(nlohmann::json &obj) {
   interact_text_ = obj["interact_text"].get<std::string>();
   damage_ = obj["damage"].get<int8_t>();
   apply_effect_ = obj["apply_effect"].get<std::string>();
+  apply_effect_time_ = obj.value("apply_effect_time", 0);
   give_item_ = obj["give_item"].get<std::string>();
 }
 

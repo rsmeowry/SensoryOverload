@@ -20,6 +20,7 @@ struct Health {
 
 struct SensorState {
   std::string current_effect_;
+  uint8_t effect_duration_ = 0;
 };
 
 struct Inventory {

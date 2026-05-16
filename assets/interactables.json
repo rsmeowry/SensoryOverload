@@ -11,11 +11,11 @@
   {
     "map_char": "E",
     "sound_id": "electricity",
-    "interact_text": "A surge of electricity strikes you",
+    "interact_text": "There seems to be an electric coil",
     "damage": 15,
     "apply_effect": "",
     "give_item": "",
-    "solid": true
+    "solid": false
   },
   {
     "map_char": "S",
@@ -23,6 +23,7 @@
     "interact_text": "Something slimy surrounds your sound sensors",
     "damage": 0,
     "apply_effect": "deaf",
+    "apply_effect_time": 5,
     "give_item": "",
     "solid": false
   },
