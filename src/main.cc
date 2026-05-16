@@ -2,6 +2,7 @@
 #include "data/loader.h"
 #include "world/world.h"
 #include "system/input.h"
+#include "system/mob_system.h"
 
 #include <fstream>
 #include <iostream>
@@ -239,6 +240,8 @@ int main() {
           mob.act(&map, &registry);
         }
       }
+      
+      MobSystem::update(map, state, registry);
       
       if (state.player_.sensors_.effect_duration_ > 0) {
         state.player_.sensors_.effect_duration_--;
