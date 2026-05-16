@@ -50,7 +50,7 @@ struct PlayerState {
     }
   }
 
-  bool is_alive() const {
+  bool isAlive() const {
     return health_.current_ > 0;
   }
 };

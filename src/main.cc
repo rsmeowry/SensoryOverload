@@ -1,11 +1,29 @@
 #include "consts.h"
 #include "data/loader.h"
 #include "world/world.h"
+#include "system/input.h"
 
 #include <fstream>
 #include <iostream>
 #include <string>
 #include <nlohmann/json.hpp>
+
+std::string dirToStr(Direction dir) {
+  switch (dir) {
+    case North:
+      return "north";
+      break;
+    case South:
+      return "south";
+      break;
+    case West:
+      return "west";
+      break;
+    case East:
+      return "east";
+      break;
+  }
+}
 
 int main() {
   DataRegistry registry;
@@ -25,11 +43,77 @@ int main() {
     std::cerr << "Failed to load setup.json" << std::endl;
   }
 
-  std::cout << "Game started!" << std::endl;
-  std::cout << "Player starts at (" << (int)state.player_.transform_.x_ << ", " << (int)state.player_.transform_.y_ << ") with " << (int)state.player_.health_.current_ << " HP." << std::endl;
+  InputSystem input_sys;
+
+  input_sys.registerCommand("help", [](const std::vector<std::string>& args, GlobalState& state, MapData& map, DataRegistry& registry) {
+    std::cout << "step - walk forward" << std::endl;
+    std::cout << "right - rotate right" << std::endl;
+    std::cout << "left - rotate left" << std::endl;
+    std::cout << "interact - interact with obj in front" << std::endl;
+    std::cout << "attack - attack the obj in front" << std::endl;
+    std::cout << "inventory - check your inventory" << std::endl;
+    std::cout << "equip <idx> - equip item at index" << std::endl;
+    std::cout << "quit - give up" << std::endl;
+  });
+  
+  input_sys.registerCommand("walk", [](const std::vector<std::string>& args, GlobalState& state, MapData& map, DataRegistry& registry) {
+    auto& t = state.player_.transform_;
+    if (t.facing_ == North) t.y_ -= 1;
+    else if (t.facing_ == South) t.y_ += 1;
+    else if (t.facing_ == West) t.x_ -= 1;
+    else if (t.facing_ == East) t.x_ += 1;
+    std::cout << "you step one tile forward" << std::endl;
+  });
+
+  input_sys.registerCommand("right", [](const std::vector<std::string>& args, GlobalState& state, MapData& map, DataRegistry& registry) {
+    auto& t = state.player_.transform_;
+    if (t.facing_ == North) t.facing_ = East;
+    else if (t.facing_ == West) t.facing_ = North;
+    else if (t.facing_ == South) t.facing_ = West;
+    else if (t.facing_ == East) t.facing_ = South;
+    std::cout << "you rotate right. now facing " << dirToStr(t.facing_) << std::endl;
+  });
+
+  input_sys.registerCommand("left", [](const std::vector<std::string>& args, GlobalState& state, MapData& map, DataRegistry& registry) {
+    auto& t = state.player_.transform_;
+    if (t.facing_ == North) t.facing_ = West;
+    else if (t.facing_ == East) t.facing_ = North;
+    else if (t.facing_ == South) t.facing_ = East;
+    else if (t.facing_ == West) t.facing_ = South;
+    std::cout << "you rotate left. now facing " << dirToStr(t.facing_) << std::endl;
+  });
+
+  input_sys.registerCommand("interact", [](const std::vector<std::string>& args, GlobalState& state, MapData& map, DataRegistry& registry) {
+    std::cout << "BOOP" << std::endl;
+  });
+
+  input_sys.registerCommand("attack", [](const std::vector<std::string>& args, GlobalState& state, MapData& map, DataRegistry& registry) {
+    std::cout << "ATTACKED" << std::endl;
+  });
+
+  input_sys.registerCommand("inventory", [](const std::vector<std::string>& args, GlobalState& state, MapData& map, DataRegistry& registry) {
+    std::cout << "INV" << std::endl;
+  });
+
+  input_sys.registerCommand("equip", [](const std::vector<std::string>& args, GlobalState& state, MapData& map, DataRegistry& registry) {
+    if (args.size() != 1) {
+      std::cout << "no such item" << std::endl;
+      return;
+    }
+    auto i = std::stoi(args[0]);
+    std::cout << "EQUIPPED " << i << std::endl;
+  });
+
+  input_sys.registerAlias("inv", "inventory");
+  input_sys.registerAlias("step", "walk");
+  input_sys.registerAlias("int", "interact");
+  input_sys.registerAlias("atk", "attack");
+
+  std::cout << "beginning!" << std::endl;
+  std::cout << "you start at (" << (int)state.player_.transform_.x_ << ", " << (int)state.player_.transform_.y_ << ") with " << (int)state.player_.health_.current_ << " HP" << std::endl;
   
   bool running = true;
-  while (running) {
+  while (running && state.player_.isAlive()) {
     std::cout << "> ";
     std::string input;
     if (!std::getline(std::cin, input)) {
@@ -41,13 +125,12 @@ int main() {
       continue;
     }
 
-    // Placeholder logic with input
-    std::cout << "Player executed: " << input << std::endl;
-
-    // Tick all mobs
-    for (auto& mob : map.mobs_) {
-      if (mob.alive_) {
-        mob.act(&map, &registry);
+    // only ticks if command exected
+    if (input_sys.executeCommand(input, state, map, registry)) {
+      for (auto& mob : map.mobs_) {
+        if (mob.alive_) {
+          mob.act(&map, &registry);
+        }
       }
     }
   }

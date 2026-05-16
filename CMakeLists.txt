@@ -23,7 +23,9 @@ add_executable(SensoryOverload src/main.cc
         src/component/component.h
         src/world/mob.h
         src/world/player.h
-        src/component/component.cc)
+        src/component/component.cc
+        src/system/input.h
+        src/system/input.cc)
 
 target_link_libraries(SensoryOverload PRIVATE nlohmann_json::nlohmann_json)
 target_link_options(SensoryOverload PRIVATE

@@ -28,6 +28,6 @@ void MapData::load(DataRegistry *loader, std::string map) {
     mobs_.emplace_back(*val);
   }
 }
-Interactable *MapData::obj_at(const int8_t x, const int8_t y) const {
+Interactable *MapData::objAt(const int8_t x, const int8_t y) const {
   return map_.at(y).at(x);
 }
