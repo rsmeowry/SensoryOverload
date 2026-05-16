@@ -1,6 +1,7 @@
 #include "input.h"
 #include <sstream>
 #include <iostream>
+#include "render_system.h"
 
 void InputSystem::registerCommand(const std::string& name, CommandCallback callback) {
   commands_[name] = callback;
@@ -38,6 +39,6 @@ bool InputSystem::executeCommand(const std::string& input, GlobalState& state, M
     return true;
   }
 
-  std::cout << "undefined command: " << command_name << std::endl;
+  RenderSystem::printMessage("undefined command: " + command_name);
   return false;
 }

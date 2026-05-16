@@ -3,6 +3,7 @@
 #include <iostream>
 #include <cmath>
 #include <algorithm>
+#include "render_system.h"
 
 void MobSystem::update(MapData& map, GlobalState& state, DataRegistry& registry) {
   std::random_device rd;
@@ -67,7 +68,7 @@ void MobSystem::update(MapData& map, GlobalState& state, DataRegistry& registry)
           state.player_.health_.current_ = 0;
         }
         
-        std::cout << "you feel a burst of pain from somewhere. you took " << damage << " damage." << std::endl;
+        RenderSystem::printMessage("you feel a burst of pain from somewhere. you took " + std::to_string(damage) + " damage.");
       } else {
         mov->x_ = next_move.x;
         mov->y_ = next_move.y;

@@ -20,7 +20,6 @@ void Effect::load(nlohmann::json &obj) {
 }
 
 void Mob::load(nlohmann::json &obj) {
-  std::cout << "MOB" << std::endl;
   map_x_ = obj["x"].get<int8_t>();
   map_y_ = obj["y"].get<int8_t>();
   interact_text_ = obj["interact_text"].get<std::string>();
@@ -28,7 +27,6 @@ void Mob::load(nlohmann::json &obj) {
   max_health_ = obj["max_health"].get<int8_t>();
   move_radius_ = obj["move_radius"].get<int8_t>();
   damage_ = obj["damage"].get<int8_t>();
-  std::cout << "MOB END" << std::endl;
 }
 
 void Item::load(nlohmann::json &obj){
