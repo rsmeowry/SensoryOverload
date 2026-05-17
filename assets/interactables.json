@@ -44,5 +44,14 @@
     "apply_effect": "",
     "give_item": "crowbar",
     "solid": false
+  },
+  {
+    "map_char": "L",
+    "sound_id": "",
+    "interact_text": "There is a data log resting here.",
+    "damage": 0,
+    "apply_effect": "",
+    "give_item": "log",
+    "solid": false
   }
 ]

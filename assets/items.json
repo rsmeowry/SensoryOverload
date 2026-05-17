@@ -12,5 +12,12 @@
     "description": "Your mech's fists",
     "is_weapon": true,
     "damage": 10
+  },
+  {
+    "id": "log",
+    "name": "Data Log",
+    "description": "An encrypted data log.",
+    "is_weapon": false,
+    "damage": 0
   }
 ]

@@ -8,6 +8,7 @@
 #include <fstream>
 #include <iostream>
 #include <string>
+#include <algorithm>
 #include <nlohmann/json.hpp>
 
 std::string dirToStr(Direction dir) {
@@ -239,6 +240,8 @@ int main() {
 
   RenderSystem::printMessage("your mission begins");
 
+  int total_logs = std::count(map_txt.begin(), map_txt.end(), 'L');
+
   bool running = true;
   while (running && state.player_.isAlive()) {
     std::cout << "> ";
@@ -269,7 +272,21 @@ int main() {
           state.player_.sensors_.current_effect_ = "";
         }
       }
+
+      int logs_collected = 0;
+      for (auto* item : state.player_.inventory_.items_) {
+        if (item->id_ == "log") logs_collected++;
+      }
+      
+      if (total_logs > 0 && logs_collected >= total_logs) {
+        RenderSystem::printMessage("congratulations! you collected all the data logs!");
+        break;
+      }
     }
+  }
+
+  if (!state.player_.isAlive()) {
+    RenderSystem::printMessage("failure... you died...");
   }
 
   return 0;
