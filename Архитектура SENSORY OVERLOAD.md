@@ -1,21 +1,12 @@
-Текстовый RPG, Data-Driven, на принципе ECS.
+Текстовый RPG, Data-Driven, на принципе ООП + гибридного ECS.
 Данные хранятся в JSON файлах, для загрузки используется nlohmann/json.
 Для звуков используется OpenAL. Рендер - вывод консоли (stdout)
 
 ## World State
-Мир состоит из нескольких частей: карты (Map), реестра data-driven объектов (Registry), менеджера сущностей для ECS (EntityManager), глобального состояния: логи т.п. (GlobalState).
+Мир состоит из нескольких частей: карты (Map), реестра data-driven объектов (Registry), состояния игрока (GlobalState), менеджера сущностей (MobSystem).
 
 Карта - фиксированная сетка с фиксированными препятствиями по миру. Двумерный массив типов тайлов, которые задаются в файлах.
 Задается через файлы содержащие карту вида сверху в 2D с символами, а также через файл с определениями тайлов по символам.
-
-## Компоненты
-Основные компоненты:
-- Transform - координаты на сетке, направление
-- Healable - объект содержащий здоровье
-- SensorState - состояние сенсоров. Влияют на восприятие мира.
-- Inventory - список всех предметов у сущности
-- Interactable - содержит тег, указывающий на локацию в реестре, определяющее звук, текст взаимодействия и т.п.
-- Mob - содержит состояние и логику для мобов (для рандомного перемещения)
 
 ## Данные в компонентах
 Все данные хранятся в JSON реестрах - массивах из объектов. 
@@ -60,13 +51,14 @@
 #### MobSystem
 Обрабатывает перемещение и логику мобов
 1. Для каждой сущности с компонентом Mob выполняет это
-2. Выбирает случайную проходимую соседнюю клетку в заданном радиусе
-3. Через Transform перемещает сущность
+2. Выбирает случайную проходимую соседнюю клетку в заданном радиусе от точки спавна
+3. Если эта клетка занята игроком, игроку наносится урон
+4. Перемещает сущность
 
 #### AudioSystem
 Отвечает за вывод звука
 1. По полученному id звука ищет его в реестре
-2. В зависимости от состояния сенсора выводит либо модулированный (lowpass+pitch), либо сломанный звук шума, либо изначальный звук
+2. В зависимости от состояния сенсора выводит либо модулированный (lowpass+pitch), либо изначальный звук
 
 #### RenderSystem
 Отвечает за отображение игры в консоли
@@ -75,76 +67,140 @@
 ## Диаграмы
 
 #### Классовая диаграмма
-Показывает примерную структуру ECS
+Показывает актуальную структуру сущностей, компонентов и реестра данных:
 ```mermaid
 %%{init: {'theme': 'default', 'flowchart': {'useMaxWidth': true}}}%%
 classDiagram
 
-class ObjectRegistry {
-	map~string, InteractableData~ interactables_
-	map~string, MobData~ mobs_
-	map~string, EffectData~ effects_
-	map~string, Sound~ sounds_
-}
-
-class EntityManager {
-	map~uint64_t, ComponentList~ entities_
-
-	createEntity()
-	addComponent(entity, component)
-	getComponents~T~()
-}
-class InteractionSystem {
-	onInteract(EntityManager mgr, uint64_t player, uint64_t target)
-}
-class RenderSystem {
-	render(EntityManager mgr)
-}
-class MobSystem {
-	update(EntityManager mgr)
-}
-class AudioSystem {
-	play(string soundId, SensorState sensors)
-}
-class Component {
-<<interface>>
-}
-class Transform {
-	int x_
-	int y_
-	Direction facing_
-}
-class Healable {
-	int current_
-	int max_
-}
-class SensorState {
-	string current_effect_
+class Parseable {
+	<<interface>>
+	+Load(json obj)*
 }
 class Interactable {
-	string object_id_
+	+char map_char_
+	+bool solid_
+	+string sound_id_
+	+string interact_text_
+	+int8_t damage_
+	+string apply_effect_
+	+int8_t apply_effect_time_
+	+string give_item_
+}
+class Effect {
+	+string id_
+	+string interact_text_
+	+float sound_pitch_
+	+float lowpass_param_
 }
 class Mob {
-	string mob_id_
+	+string id_
+	+int8_t map_x_
+	+int8_t map_y_
+	+string interact_text_
+	+int8_t max_health_
+	+int8_t move_radius_
+	+int8_t damage_
+}
+class Item {
+	+string id_
+	+string name_
+	+string description_
+	+bool is_weapon_
+	+int8_t damage_
 }
 
-EntityManager --> Component
-EntityManager ..> ObjectRegistry
-MobSystem ..> EntityManager
-AudioSystem ..> EntityManager
-InteractionSystem ..> EntityManager
-RenderSystem ..> EntityManager
+Parseable <|-- Interactable
+Parseable <|-- Effect
+Parseable <|-- Mob
+Parseable <|-- Item
 
-Component --> Transform
-Component --> Healable
-Component --> SensorState
-Component --> Interactable
-Component --> Mob
+class DataRegistry {
+	+unordered_map~char, Interactable*~ interact_by_char_
+	+unordered_map~string, Mob*~ mobs_
+	+unordered_map~string, Item*~ items_
+	+unordered_map~string, Effect*~ effects_
+	+Load()
+}
 
+class Component {
+	<<interface>>
+	+Act(LivingMob* self, MapData* map, DataRegistry* data)*
+}
+
+class Moveable {
+	+uint8_t x_
+	+uint8_t y_
+	+Direction facing_
+	+Act(...)
+}
+
+class Healable {
+	+int8_t current_
+	+uint8_t max_
+	+Act(...)
+}
+
+Component <|-- Moveable
+Component <|-- Healable
+
+class LivingMob {
+	+Mob mob_
+	+bool alive_
+	+vector~unique_ptr~Component~~ components_
+	+act(MapData* map, DataRegistry* data)
+}
+
+LivingMob *-- Component
+
+class Transform {
+	+uint8_t x_
+	+uint8_t y_
+	+Direction facing_
+}
+class Health {
+	+uint8_t current_
+	+uint8_t max_
+}
+class SensorState {
+	+string current_effect_
+	+uint8_t effect_duration_
+}
+class Inventory {
+	+vector~Item*~ items_
+	+uint8_t active_
+}
+class PlayerState {
+	+Transform transform_
+	+Health health_
+	+SensorState sensors_
+	+Inventory inventory_
+	+Load(...)
+	+IsAlive()
+}
+
+PlayerState *-- Transform
+PlayerState *-- Health
+PlayerState *-- SensorState
+PlayerState *-- Inventory
+
+class MapData {
+	-vector~vector~Interactable*~~ map_
+	+vector~LivingMob~ mobs_
+	+uint8_t size_
+	+Load(...)
+	+ObjAt(...)
+	+SetObjAt(...)
+}
+
+class GlobalState {
+	+PlayerState player_
+}
+
+GlobalState *-- PlayerState
 ```
 
 #### Последовательность (взаимодействия)
-Что происходит при взаимодействии с объектом
+Процесс обработки взаимодействия игрока с объектом на карте:
 ```mermaid
 %%{init: {'theme': 'default', 'flowchart': {'useMaxWidth': true}}}%%
 
@@ -152,29 +208,33 @@ sequenceDiagram
 
 participant P as Игрок (ввод)
 participant IS as InteractionSystem
-participant EM as EntityManager
-participant OR as ObjectRegistry
+participant GS as GlobalState (Игрок)
+participant MD as MapData (Карта)
+participant OR as DataRegistry (Реестр)
 participant AS as AudioSystem
 participant RS as RenderSystem
 
 P->>IS: "взаимодействовать/взаим/исп"
-IS->>EM: Получить компоненты Transform, SensorState с игрока
-IS->>EM: Получить сущн. на тайле спереди игрока
-IS->>EM: Получить компонент Interactable с объекта
-IS->>OR: Получить данные объекта
-IS->>RS: Вывести текст взаимодействия
-RS->>OR: Получить данные эффекта на игроке
-alt Эффект влияет на текст?
-	RS-->>P: Вывести замещенный эффектом текст
-else
-	RS-->>P: Вывести текст взаимодействия
-end
-IS->>AS: Проиграть звук взаимодействия
-AS->>OR: Получить данные эффекта на игроке
-alt Эффект влияет на аудио?
-	AS-->>P: Проиграть модулированное аудио
-else
-	AS-->>P: Проиграть обычное аудио
+IS->>GS: Получить transform_ и sensors_ игрока
+IS->>MD: Проверить объект на тайле перед игроком (ObjAt)
+MD-->>IS: Возвращает Interactable*
+alt Объект существует
+	IS->>OR: Найти данные эффекта в реестре (effects_)
+	IS->>RS: Вывести текст взаимодействия
+	alt У игрока активный эффект?
+		RS-->>P: Вывести замещенный эффектом текст (из Effect)
+	else
+		RS-->>P: Вывести стандартный текст взаимодействия (из Interactable)
+	end
+	IS->>AS: Проиграть звук (sound_id_)
+	alt У игрока активный эффект?
+		AS-->>P: Проиграть аудио с pitch/lowpass модуляцией
+	else
+		AS-->>P: Проиграть аудио без искажений
+	end
+	opt Объект наносит урон или накладывает эффект/предмет
+		IS->>GS: Нанести урон / применить эффект / добавить предмет в инвентарь
+	end
 end
 ```
 
@@ -196,8 +256,7 @@ MobUpdate --> PlayerUpdate[Обновление состояния игрока]
 PlayerUpdate --> RenderSystem[Рендер в консоль]
 RenderSystem --> CheckWin{Проверка условий победы}
 CheckWin -- HP <= 0 --> End
-CheckWin -- 5 логов + выход --> End
+CheckWin -- Собраны все логи на карте --> End
 CheckWin -- Нет --> Loop
 Loop --> Нет --> End((Конец))
 ```
-
