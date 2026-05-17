@@ -1,7 +1,7 @@
 #include "content.h"
 
 #include <iostream>
-void Interactable::load(nlohmann::json &obj) {
+void Interactable::Load(nlohmann::json &obj) {
   solid_ = obj["solid"].get<bool>();
   map_char_ = obj["map_char"].get<std::string>()[0];
   sound_id_ = obj["sound_id"].get<std::string>();
@@ -12,14 +12,14 @@ void Interactable::load(nlohmann::json &obj) {
   give_item_ = obj["give_item"].get<std::string>();
 }
 
-void Effect::load(nlohmann::json &obj) {
+void Effect::Load(nlohmann::json &obj) {
   id_ = obj["id"].get<std::string>();
   interact_text_ = obj["interact_text"].get<std::string>();
   sound_pitch_ = obj["sound_pitch"].get<float>();
   lowpass_param_ = obj["lowpass_param"].get<float>();
 }
 
-void Mob::load(nlohmann::json &obj) {
+void Mob::Load(nlohmann::json &obj) {
   map_x_ = obj["x"].get<int8_t>();
   map_y_ = obj["y"].get<int8_t>();
   interact_text_ = obj["interact_text"].get<std::string>();
@@ -29,7 +29,7 @@ void Mob::load(nlohmann::json &obj) {
   damage_ = obj["damage"].get<int8_t>();
 }
 
-void Item::load(nlohmann::json &obj){
+void Item::Load(nlohmann::json &obj){
   id_ = obj["id"].get<std::string>();
   name_ = obj["name"].get<std::string>();
   description_ = obj["description"].get<std::string>();

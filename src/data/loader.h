@@ -11,7 +11,7 @@ public:
   std::unordered_map<std::string, Item*> items_;
   std::unordered_map<std::string, Effect*> effects_;
 
-  void load();
+  void Load();
 };
 
 #endif // SENSORYOVERLOAD_LOADER_H

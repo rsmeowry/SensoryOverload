@@ -5,7 +5,7 @@
 #include <algorithm>
 #include "render_system.h"
 
-void MobSystem::update(MapData& map, GlobalState& state, DataRegistry& registry) {
+void MobSystem::Update(MapData& map, GlobalState& state, DataRegistry& registry) {
   std::random_device rd;
   std::mt19937 gen(rd());
 
@@ -41,7 +41,7 @@ void MobSystem::update(MapData& map, GlobalState& state, DataRegistry& registry)
       if (n.x >= 0 && n.y >= 0 && n.x < map.size_ && n.y < map.size_) {
         bool is_player = (n.x == state.player_.transform_.x_ && n.y == state.player_.transform_.y_);
         
-        auto obj = map.objAt(n.x, n.y);
+        auto obj = map.ObjAt(n.x, n.y);
         if (is_player || (obj && !obj->solid_)) {
           if (std::max(std::abs(n.x - origin_x), std::abs(n.y - origin_y)) <= radius) {
             valid_moves.push_back(n);
@@ -68,7 +68,7 @@ void MobSystem::update(MapData& map, GlobalState& state, DataRegistry& registry)
           state.player_.health_.current_ = 0;
         }
         
-        RenderSystem::printMessage("you feel a burst of pain from somewhere. you took " + std::to_string(damage) + " damage.");
+        RenderSystem::PrintMessage("you feel a burst of pain from somewhere. you took " + std::to_string(damage) + " damage.");
       } else {
         mov->x_ = next_move.x;
         mov->y_ = next_move.y;

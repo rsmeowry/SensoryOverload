@@ -3,17 +3,17 @@
 #include <iostream>
 #include "render_system.h"
 
-void InputSystem::registerCommand(const std::string& name, CommandCallback callback) {
+void InputSystem::RegisterCommand(const std::string& name, CommandCallback callback) {
   commands_[name] = callback;
 }
 
-void InputSystem::registerAlias(const std::string& alias, const std::string& command_name) {
+void InputSystem::RegisterAlias(const std::string& alias, const std::string& command_name) {
   if (commands_.find(command_name) != commands_.end()) {
     commands_[alias] = commands_[command_name];
   }
 }
 
-bool InputSystem::executeCommand(const std::string& input, GlobalState& state, MapData& map, DataRegistry& registry) {
+bool InputSystem::ExecuteCommand(const std::string& input, GlobalState& state, MapData& map, DataRegistry& registry) {
   if (input.empty()) return false;
 
   std::istringstream iss(input);
@@ -39,6 +39,6 @@ bool InputSystem::executeCommand(const std::string& input, GlobalState& state, M
     return true;
   }
 
-  RenderSystem::printMessage("undefined command: " + command_name);
+  RenderSystem::PrintMessage("undefined command: " + command_name);
   return false;
 }

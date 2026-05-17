@@ -13,13 +13,13 @@ std::unordered_map<std::string, ALuint> AudioSystem::buffer_cache_;
 std::vector<ALuint> AudioSystem::active_sources_;
 
 // efx functions
-static LPALGENFILTERS alGenFilters_ = nullptr;
-static LPALDELETEFILTERS alDeleteFilters_ = nullptr;
-static LPALFILTERI alFilteri_ = nullptr;
-static LPALFILTERF alFilterf_ = nullptr;
-static bool efx_available_ = false;
+static LPALGENFILTERS al_gen_filters = nullptr;
+static LPALDELETEFILTERS al_delete_filters = nullptr;
+static LPALFILTERI al_filter_i = nullptr;
+static LPALFILTERF al_filter_f = nullptr;
+static bool exf_available = false;
 
-bool AudioSystem::init() {
+bool AudioSystem::Init() {
   device_ = alcOpenDevice(nullptr);
   if (!device_) {
     std::cerr << "NO AUDIO DEVICE!!" << std::endl;
@@ -38,17 +38,17 @@ bool AudioSystem::init() {
 
   // loading efx extensions for filters
   if (alcIsExtensionPresent(device_, "ALC_EXT_EFX")) {
-    alGenFilters_ = reinterpret_cast<LPALGENFILTERS>(alGetProcAddress("alGenFilters"));
-    alDeleteFilters_ = reinterpret_cast<LPALDELETEFILTERS>(alGetProcAddress("alDeleteFilters"));
-    alFilteri_ = reinterpret_cast<LPALFILTERI>(alGetProcAddress("alFilteri"));
-    alFilterf_ = reinterpret_cast<LPALFILTERF>(alGetProcAddress("alFilterf"));
-    efx_available_ = (alGenFilters_ && alDeleteFilters_ && alFilteri_ && alFilterf_);
+    al_gen_filters = reinterpret_cast<LPALGENFILTERS>(alGetProcAddress("alGenFilters"));
+    al_delete_filters = reinterpret_cast<LPALDELETEFILTERS>(alGetProcAddress("alDeleteFilters"));
+    al_filter_i = reinterpret_cast<LPALFILTERI>(alGetProcAddress("alFilteri"));
+    al_filter_f = reinterpret_cast<LPALFILTERF>(alGetProcAddress("alFilterf"));
+    exf_available = (al_gen_filters && al_delete_filters && al_filter_i && al_filter_f);
   }
 
   return true;
 }
 
-void AudioSystem::cleanup() {
+void AudioSystem::Cleanup() {
   for (auto src : active_sources_) {
     alSourceStop(src);
     alDeleteSources(1, &src);
@@ -72,7 +72,7 @@ void AudioSystem::cleanup() {
 }
 
 // simple wav loader
-ALuint AudioSystem::loadWav(const std::string& path) {
+ALuint AudioSystem::LoadWav(const std::string& path) {
   std::ifstream file(path, std::ios::binary);
   if (!file.is_open()) return 0;
 
@@ -145,7 +145,7 @@ ALuint AudioSystem::loadWav(const std::string& path) {
   return 0;
 }
 
-void AudioSystem::cleanupFinishedSources() {
+void AudioSystem::CleanupFinishedSources() {
   auto it = active_sources_.begin();
   while (it != active_sources_.end()) {
     ALint state;
@@ -159,10 +159,10 @@ void AudioSystem::cleanupFinishedSources() {
   }
 }
 
-void AudioSystem::play(const std::string& soundId, const SensorState& sensors, const DataRegistry& registry) {
+void AudioSystem::Play(const std::string& soundId, const SensorState& sensors, const DataRegistry& registry) {
   if (soundId.empty() || !device_) return;
 
-  cleanupFinishedSources();
+  CleanupFinishedSources();
 
   // loading buffer (or getting cached buffer)
   ALuint buffer;
@@ -170,8 +170,8 @@ void AudioSystem::play(const std::string& soundId, const SensorState& sensors, c
   if (cache_it != buffer_cache_.end()) {
     buffer = cache_it->second;
   } else {
-    std::string path = ROOT_DIR + "assets/" + soundId + ".wav";
-    buffer = loadWav(path);
+    std::string path = kRootDir + "assets/" + soundId + ".wav";
+    buffer = LoadWav(path);
     if (buffer == 0) { // couldnt load
       return;
     }
@@ -195,14 +195,14 @@ void AudioSystem::play(const std::string& soundId, const SensorState& sensors, c
       }
 
       // lowpass
-      if (efx_available_ && effect->lowpass_param_ > 0) {
+      if (exf_available && effect->lowpass_param_ > 0) {
         ALuint filter;
-        alGenFilters_(1, &filter);
-        alFilteri_(filter, AL_FILTER_TYPE, AL_FILTER_LOWPASS);
-        alFilterf_(filter, AL_LOWPASS_GAIN, effect->lowpass_param_);
-        alFilterf_(filter, AL_LOWPASS_GAINHF, effect->lowpass_param_);
+        al_gen_filters(1, &filter);
+        al_filter_i(filter, AL_FILTER_TYPE, AL_FILTER_LOWPASS);
+        al_filter_f(filter, AL_LOWPASS_GAIN, effect->lowpass_param_);
+        al_filter_f(filter, AL_LOWPASS_GAINHF, effect->lowpass_param_);
         alSourcei(source, AL_DIRECT_FILTER, filter);
-        alDeleteFilters_(1, &filter);
+        al_delete_filters(1, &filter);
       }
     }
   }

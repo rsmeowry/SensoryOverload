@@ -14,10 +14,10 @@ class InputSystem {
 public:
   std::unordered_map<std::string, CommandCallback> commands_;
 
-  void registerCommand(const std::string& name, CommandCallback callback);
-  void registerAlias(const std::string& alias, const std::string& command_name);
+  void RegisterCommand(const std::string& name, CommandCallback callback);
+  void RegisterAlias(const std::string& alias, const std::string& command_name);
   
-  bool executeCommand(const std::string& input, GlobalState& state, MapData& map, DataRegistry& registry);
+  bool ExecuteCommand(const std::string& input, GlobalState& state, MapData& map, DataRegistry& registry);
 };
 
 #endif // SENSORYOVERLOAD_INPUT_H

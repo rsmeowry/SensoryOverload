@@ -12,9 +12,9 @@ class DataRegistry;
 
 class AudioSystem {
 public:
-  static bool init();
-  static void cleanup();
-  static void play(const std::string& soundId, const SensorState& sensors, const DataRegistry& registry);
+  static bool Init();
+  static void Cleanup();
+  static void Play(const std::string& soundId, const SensorState& sensors, const DataRegistry& registry);
 
 private:
   static ALCdevice* device_;
@@ -22,8 +22,8 @@ private:
   static std::unordered_map<std::string, ALuint> buffer_cache_;
   static std::vector<ALuint> active_sources_;
 
-  static ALuint loadWav(const std::string& path);
-  static void cleanupFinishedSources();
+  static ALuint LoadWav(const std::string& path);
+  static void CleanupFinishedSources();
 };
 
 #endif // SENSORYOVERLOAD_AUDIO_SYSTEM_H

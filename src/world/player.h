@@ -34,7 +34,7 @@ struct PlayerState {
   SensorState sensors_;
   Inventory inventory_;
 
-  void load(const nlohmann::json& obj) {
+  void Load(const nlohmann::json& obj) {
     if (obj.contains("player")) {
       auto p = obj["player"];
       transform_.x_ = p.value("x", 0);
@@ -52,7 +52,7 @@ struct PlayerState {
     }
   }
 
-  bool isAlive() const {
+  bool IsAlive() const {
     return health_.current_ > 0;
   }
 };

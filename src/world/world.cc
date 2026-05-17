@@ -6,7 +6,7 @@
 #include "../data/loader.h"
 #include "../world/mob.h"
 
-void MapData::load(DataRegistry *loader, std::string map) {
+void MapData::Load(DataRegistry *loader, std::string map) {
   std::istringstream str(map);
   std::string tok;
   auto y = 0;
@@ -29,11 +29,11 @@ void MapData::load(DataRegistry *loader, std::string map) {
     mobs_.emplace_back(*val);
   }
 }
-Interactable *MapData::objAt(const uint8_t x, const uint8_t y) const {
+Interactable *MapData::ObjAt(const uint8_t x, const uint8_t y) const {
   return map_.at(y).at(x);
 }
 
-void MapData::setObjAt(uint8_t x, uint8_t y, Interactable* obj) {
+void MapData::SetObjAt(uint8_t x, uint8_t y, Interactable* obj) {
   if (y < map_.size() && x < map_[y].size()) {
     map_[y][x] = obj;
   }

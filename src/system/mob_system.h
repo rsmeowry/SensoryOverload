@@ -6,7 +6,7 @@
 
 class MobSystem {
 public:
-  static void update(MapData& map, GlobalState& state, DataRegistry& registry);
+  static void Update(MapData& map, GlobalState& state, DataRegistry& registry);
 };
 
 #endif // SENSORYOVERLOAD_MOB_SYSTEM_H

@@ -13,7 +13,7 @@
 #include <algorithm>
 #include <nlohmann/json.hpp>
 
-std::string dirToStr(Direction dir) {
+std::string DirToStr(Direction dir) {
   switch (dir) {
     case North:
       return "north";
@@ -34,29 +34,29 @@ std::string dirToStr(Direction dir) {
 
 int main() {
   DataRegistry registry;
-  registry.load();
+  registry.Load();
   MapData map;
-  std::ifstream str(ROOT_DIR + "assets/map.txt");
+  std::ifstream str(kRootDir + "assets/map.txt");
   std::string map_txt(std::istreambuf_iterator<char>(str), {});
-  map.load(&registry, map_txt);
+  map.Load(&registry, map_txt);
 
   GlobalState state;
-  std::ifstream setup_str(ROOT_DIR + "assets/setup.json");
+  std::ifstream setup_str(kRootDir + "assets/setup.json");
   if (setup_str.is_open()) {
     nlohmann::json setup_json;
     setup_str >> setup_json;
-    state.player_.load(setup_json);
+    state.player_.Load(setup_json);
     state.player_.inventory_.items_.emplace_back(registry.items_[setup_json.value("starting_item", "fists")]);
   } else {
     std::cerr << "failed to load setup.json" << std::endl;
   }
 
-  AudioSystem::init();
+  AudioSystem::Init();
 
   InputSystem input_sys;
 
-  input_sys.registerCommand("help", [](const std::vector<std::string>& args, GlobalState& state, MapData& map, DataRegistry& registry) {
-    RenderSystem::printMessage("step - walk forward\n"
+  input_sys.RegisterCommand("help", [](const std::vector<std::string>& args, GlobalState& state, MapData& map, DataRegistry& registry) {
+    RenderSystem::PrintMessage("step - walk forward\n"
                                "right - rotate right\n"
                                "left - rotate left\n"
                                "interact - interact with obj in front\n"
@@ -67,7 +67,7 @@ int main() {
                                "quit - give up");
   });
   
-  input_sys.registerCommand("walk", [](const std::vector<std::string>& args, GlobalState& state, MapData& map, DataRegistry& registry) {
+  input_sys.RegisterCommand("walk", [](const std::vector<std::string>& args, GlobalState& state, MapData& map, DataRegistry& registry) {
     auto& t = state.player_.transform_;
     auto t_x = t.x_;
     auto t_y = t.y_;
@@ -77,48 +77,48 @@ int main() {
     else if (t.facing_ == East) t_x += 1;
     t_y = std::clamp(t_y, static_cast<uint8_t>(0), map.size_);
     t_x = std::clamp(t_x, static_cast<uint8_t>(0), map.size_);
-    if (map.objAt(t_x, t_y)->solid_) {
-      RenderSystem::printMessage("something blocks your way");
+    if (map.ObjAt(t_x, t_y)->solid_) {
+      RenderSystem::PrintMessage("something blocks your way");
     } else {
       t.x_ = t_x;
       t.y_ = t_y;
-      RenderSystem::printMessage("you step one tile forward");
-      auto obj = map.objAt(t_x, t_y);
+      RenderSystem::PrintMessage("you step one tile forward");
+      auto obj = map.ObjAt(t_x, t_y);
       if (!obj->apply_effect_.empty() && obj->apply_effect_time_ > 0) {
         state.player_.sensors_.current_effect_ = obj->apply_effect_;
         state.player_.sensors_.effect_duration_ = obj->apply_effect_time_;
-        RenderSystem::printMessage("you feel like there's something wrong with your sensors");
+        RenderSystem::PrintMessage("you feel like there's something wrong with your sensors");
       }
       if (obj->damage_ != 0) {
         state.player_.health_.current_ -= obj->damage_;
-        RenderSystem::printMessage("you feel a burst of pain");
+        RenderSystem::PrintMessage("you feel a burst of pain");
       }
     }
   });
 
-  input_sys.registerCommand("right", [](const std::vector<std::string>& args, GlobalState& state, MapData& map, DataRegistry& registry) {
+  input_sys.RegisterCommand("right", [](const std::vector<std::string>& args, GlobalState& state, MapData& map, DataRegistry& registry) {
     auto& t = state.player_.transform_;
     if (t.facing_ == North) t.facing_ = East;
     else if (t.facing_ == West) t.facing_ = North;
     else if (t.facing_ == South) t.facing_ = West;
     else if (t.facing_ == East) t.facing_ = South;
-    RenderSystem::printMessage("you rotate right. now facing " + dirToStr(t.facing_));
+    RenderSystem::PrintMessage("you rotate right. now facing " + DirToStr(t.facing_));
   });
 
-  input_sys.registerCommand("left", [](const std::vector<std::string>& args, GlobalState& state, MapData& map, DataRegistry& registry) {
+  input_sys.RegisterCommand("left", [](const std::vector<std::string>& args, GlobalState& state, MapData& map, DataRegistry& registry) {
     auto& t = state.player_.transform_;
     if (t.facing_ == North) t.facing_ = West;
     else if (t.facing_ == East) t.facing_ = North;
     else if (t.facing_ == South) t.facing_ = East;
     else if (t.facing_ == West) t.facing_ = South;
-    RenderSystem::printMessage("you rotate left. now facing " + dirToStr(t.facing_));
+    RenderSystem::PrintMessage("you rotate left. now facing " + DirToStr(t.facing_));
   });
 
-  input_sys.registerCommand("interact", [](const std::vector<std::string>& args, GlobalState& state, MapData& map, DataRegistry& registry) {
-    InteractionSystem::onInteract(state, map, registry);
+  input_sys.RegisterCommand("interact", [](const std::vector<std::string>& args, GlobalState& state, MapData& map, DataRegistry& registry) {
+    InteractionSystem::OnInteract(state, map, registry);
   });
 
-  input_sys.registerCommand("attack", [](const std::vector<std::string>& args, GlobalState& state, MapData& map, DataRegistry& registry) {
+  input_sys.RegisterCommand("attack", [](const std::vector<std::string>& args, GlobalState& state, MapData& map, DataRegistry& registry) {
     auto& t = state.player_.transform_;
     auto t_x = t.x_;
     auto t_y = t.y_;
@@ -138,7 +138,7 @@ int main() {
         for (auto& cmp : mob.components_) {
           if (auto m = dynamic_cast<Moveable*>(cmp.get())) {
             if (m->x_ == t_x && m->y_ == t_y) {
-              RenderSystem::printMessage("you swing and hit something in front of you");
+              RenderSystem::PrintMessage("you swing and hit something in front of you");
               for (auto& c: mob.components_) {
                 if (auto h = dynamic_cast<Healable*>(c.get())) {
                   h->current_ -= state.player_.inventory_.items_[state.player_.inventory_.active_]->damage_;
@@ -154,54 +154,54 @@ int main() {
     }
 
     if (!found_mob) {
-      RenderSystem::printMessage("you swing but reach nothing");
+      RenderSystem::PrintMessage("you swing but reach nothing");
     }
   });
 
-  input_sys.registerCommand("inventory", [](const std::vector<std::string>& args, GlobalState& state, MapData& map, DataRegistry& registry) {
+  input_sys.RegisterCommand("inventory", [](const std::vector<std::string>& args, GlobalState& state, MapData& map, DataRegistry& registry) {
     auto& inv = state.player_.inventory_;
     for (size_t i = 0; i < inv.items_.size(); ++i) {
-      RenderSystem::printMessage(std::to_string(i) + " " + inv.items_[i]->name_ + " - " + inv.items_[i]->description_);
+      RenderSystem::PrintMessage(std::to_string(i) + " " + inv.items_[i]->name_ + " - " + inv.items_[i]->description_);
     }
-    RenderSystem::printMessage("Currently equipped: " + std::to_string(inv.active_));
+    RenderSystem::PrintMessage("Currently equipped: " + std::to_string(inv.active_));
   });
 
-  input_sys.registerCommand("examine", [](const std::vector<std::string>& args, GlobalState& state, MapData& map, DataRegistry& registry) {
-    RenderSystem::printMessage("HEALTH: " + std::to_string(state.player_.health_.current_) + "/" + std::to_string(state.player_.health_.max_));
-    RenderSystem::printMessage("SENSORS: " + state.player_.sensors_.current_effect_ + " : " + std::to_string(state.player_.sensors_.effect_duration_) + " T. LEFT");
-    RenderSystem::printMessage("POS: " + std::to_string(state.player_.transform_.x_) + ";" + std::to_string(state.player_.transform_.y_));
-    RenderSystem::printMessage("FORWARD: " + dirToStr(state.player_.transform_.facing_));
+  input_sys.RegisterCommand("examine", [](const std::vector<std::string>& args, GlobalState& state, MapData& map, DataRegistry& registry) {
+    RenderSystem::PrintMessage("HEALTH: " + std::to_string(state.player_.health_.current_) + "/" + std::to_string(state.player_.health_.max_));
+    RenderSystem::PrintMessage("SENSORS: " + state.player_.sensors_.current_effect_ + " : " + std::to_string(state.player_.sensors_.effect_duration_) + " T. LEFT");
+    RenderSystem::PrintMessage("POS: " + std::to_string(state.player_.transform_.x_) + ";" + std::to_string(state.player_.transform_.y_));
+    RenderSystem::PrintMessage("FORWARD: " + DirToStr(state.player_.transform_.facing_));
  });
 
-  input_sys.registerCommand("equip", [](const std::vector<std::string>& args, GlobalState& state, MapData& map, DataRegistry& registry) {
+  input_sys.RegisterCommand("equip", [](const std::vector<std::string>& args, GlobalState& state, MapData& map, DataRegistry& registry) {
     if (args.size() != 1) {
-      RenderSystem::printMessage("no such item");
+      RenderSystem::PrintMessage("no such item");
       return;
     }
     try {
       int i = std::stoi(args[0]);
       if (i >= 0 && i < state.player_.inventory_.items_.size()) {
         state.player_.inventory_.active_ = static_cast<uint8_t>(i);
-        RenderSystem::printMessage("EQUIPPED " + std::to_string(i));
+        RenderSystem::PrintMessage("EQUIPPED " + std::to_string(i));
       } else {
-        RenderSystem::printMessage("no such item");
+        RenderSystem::PrintMessage("no such item");
       }
     } catch (...) {
-      RenderSystem::printMessage("no such item");
+      RenderSystem::PrintMessage("no such item");
     }
   });
 
-  input_sys.registerAlias("inv", "inventory");
-  input_sys.registerAlias("step", "walk");
-  input_sys.registerAlias("int", "interact");
-  input_sys.registerAlias("atk", "attack");
+  input_sys.RegisterAlias("inv", "inventory");
+  input_sys.RegisterAlias("step", "walk");
+  input_sys.RegisterAlias("int", "interact");
+  input_sys.RegisterAlias("atk", "attack");
 
-  RenderSystem::printMessage("your mission begins");
+  RenderSystem::PrintMessage("your mission begins");
 
   int total_logs = std::count(map_txt.begin(), map_txt.end(), 'L');
 
   bool running = true;
-  while (running && state.player_.isAlive()) {
+  while (running && state.player_.IsAlive()) {
     std::cout << "> ";
     std::string input;
     if (!std::getline(std::cin, input)) {
@@ -214,19 +214,19 @@ int main() {
     }
 
     // only ticks if command exected
-    if (input_sys.executeCommand(input, state, map, registry)) {
+    if (input_sys.ExecuteCommand(input, state, map, registry)) {
       for (auto& mob : map.mobs_) {
         if (mob.alive_) {
           mob.act(&map, &registry);
         }
       }
       
-      MobSystem::update(map, state, registry);
+      MobSystem::Update(map, state, registry);
       
       if (state.player_.sensors_.effect_duration_ > 0) {
         state.player_.sensors_.effect_duration_--;
         if (state.player_.sensors_.effect_duration_ == 0) {
-          RenderSystem::printMessage("your sensors return to normal.");
+          RenderSystem::PrintMessage("your sensors return to normal.");
           state.player_.sensors_.current_effect_ = "";
         }
       }
@@ -237,16 +237,16 @@ int main() {
       }
       
       if (total_logs > 0 && logs_collected >= total_logs) {
-        RenderSystem::printMessage("congratulations! you collected all the data logs!");
+        RenderSystem::PrintMessage("congratulations! you collected all the data logs!");
         break;
       }
     }
   }
 
-  if (!state.player_.isAlive()) {
-    RenderSystem::printMessage("failure... you died...");
+  if (!state.player_.IsAlive()) {
+    RenderSystem::PrintMessage("failure... you died...");
   }
 
-  AudioSystem::cleanup();
+  AudioSystem::Cleanup();
   return 0;
 }

@@ -6,7 +6,7 @@
 class Parseable {
 public:
   virtual ~Parseable() = default;
-  virtual void load(nlohmann::json& obj) = 0;
+  virtual void Load(nlohmann::json& obj) = 0;
 };
 
 class Interactable final : public Parseable {
@@ -20,7 +20,7 @@ public:
   int8_t apply_effect_time_ = 0;
   std::string give_item_;
 
-  void load(nlohmann::json &obj) override;
+  void Load(nlohmann::json &obj) override;
 
   ~Interactable() override = default;
 };
@@ -32,7 +32,7 @@ public:
   float sound_pitch_ = -1;
   float lowpass_param_ = -1;
 
-  void load(nlohmann::json &obj) override;
+  void Load(nlohmann::json &obj) override;
 
   ~Effect() override = default;
 };
@@ -47,7 +47,7 @@ public:
   int8_t move_radius_;
   int8_t damage_;
 
-  void load(nlohmann::json &obj) override;
+  void Load(nlohmann::json &obj) override;
 
   ~Mob() override = default;
 };
@@ -60,7 +60,7 @@ public:
   bool is_weapon_;
   int8_t damage_;
 
-  void load(nlohmann::json &obj) override;
+  void Load(nlohmann::json &obj) override;
 
   ~Item() override = default;
 };

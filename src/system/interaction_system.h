@@ -6,7 +6,7 @@
 
 class InteractionSystem {
 public:
-  static void onInteract(GlobalState& state, MapData& map, DataRegistry& registry);
+  static void OnInteract(GlobalState& state, MapData& map, DataRegistry& registry);
 };
 
 #endif // SENSORYOVERLOAD_INTERACTION_SYSTEM_H

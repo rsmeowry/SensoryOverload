@@ -30,7 +30,7 @@ public:
 
   void act(MapData* map, DataRegistry* data) {
     for (auto && cmp : components_) {
-      cmp->act(this, map, data);
+      cmp->Act(this, map, data);
     }
   }
 };

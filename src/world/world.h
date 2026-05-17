@@ -15,9 +15,9 @@ public:
   std::vector<LivingMob> mobs_;
   uint8_t size_;
 
-  void load(DataRegistry *loader, std::string map);
-  Interactable * objAt(uint8_t x, uint8_t y) const;
-  void setObjAt(uint8_t x, uint8_t y, Interactable* obj);
+  void Load(DataRegistry *loader, std::string map);
+  Interactable * ObjAt(uint8_t x, uint8_t y) const;
+  void SetObjAt(uint8_t x, uint8_t y, Interactable* obj);
 };
 
 struct GlobalState {
