@@ -12,6 +12,19 @@ FetchContent_Declare(json
 )
 FetchContent_MakeAvailable(json)
 
+set(ALSOFT_UTILS OFF CACHE BOOL "" FORCE)
+set(ALSOFT_EXAMPLES OFF CACHE BOOL "" FORCE)
+set(ALSOFT_INSTALL OFF CACHE BOOL "" FORCE)
+set(ALSOFT_INSTALL_CONFIG OFF CACHE BOOL "" FORCE)
+set(ALSOFT_INSTALL_HRTF_DATA OFF CACHE BOOL "" FORCE)
+set(ALSOFT_INSTALL_AMBDEC_PRESETS OFF CACHE BOOL "" FORCE)
+set(CMAKE_POLICY_VERSION_MINIMUM 3.5)
+
+FetchContent_Declare(openal-soft
+        URL https://github.com/kcat/openal-soft/archive/refs/tags/1.24.3.tar.gz
+)
+FetchContent_MakeAvailable(openal-soft)
+
 add_executable(SensoryOverload src/main.cc
         src/world/world.h
         src/data/content.h
@@ -35,7 +48,7 @@ add_executable(SensoryOverload src/main.cc
         src/system/interaction_system.h
         src/system/interaction_system.cc)
 
-target_link_libraries(SensoryOverload PRIVATE nlohmann_json::nlohmann_json)
+target_link_libraries(SensoryOverload PRIVATE nlohmann_json::nlohmann_json OpenAL::OpenAL)
 target_link_options(SensoryOverload PRIVATE
         -static-libgcc
         -static-libstdc++

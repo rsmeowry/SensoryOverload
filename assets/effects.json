@@ -4,5 +4,11 @@
     "interact_text": "",
     "sound_pitch": 0.5,
     "lowpass_param": 0.2
+  },
+  {
+    "id": "electrized",
+    "interact_text": "you are jolting with pain",
+    "sound_pitch": 0.1,
+    "lowpass_param": 0
   }
 ]

@@ -1,7 +1,8 @@
 #include "interaction_system.h"
-#include "render_system.h"
 #include "audio_system.h"
+#include "render_system.h"
 #include <algorithm>
+#include <iostream>
 
 void InteractionSystem::onInteract(GlobalState& state, MapData& map, DataRegistry& registry) {
   auto& t = state.player_.transform_;
@@ -54,5 +55,5 @@ void InteractionSystem::onInteract(GlobalState& state, MapData& map, DataRegistr
   }
 
   RenderSystem::printInteraction(text_to_display, state, registry);
-  AudioSystem::play(sound_to_play, state.player_.sensors_);
+  AudioSystem::play(sound_to_play, state.player_.sensors_, registry);
 }

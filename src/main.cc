@@ -5,6 +5,7 @@
 #include "system/mob_system.h"
 #include "system/render_system.h"
 #include "system/interaction_system.h"
+#include "system/audio_system.h"
 
 #include <fstream>
 #include <iostream>
@@ -49,6 +50,8 @@ int main() {
   } else {
     std::cerr << "failed to load setup.json" << std::endl;
   }
+
+  AudioSystem::init();
 
   InputSystem input_sys;
 
@@ -244,5 +247,6 @@ int main() {
     RenderSystem::printMessage("failure... you died...");
   }
 
+  AudioSystem::cleanup();
   return 0;
 }
