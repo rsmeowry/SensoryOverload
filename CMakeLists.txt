@@ -18,6 +18,7 @@ set(ALSOFT_INSTALL OFF CACHE BOOL "" FORCE)
 set(ALSOFT_INSTALL_CONFIG OFF CACHE BOOL "" FORCE)
 set(ALSOFT_INSTALL_HRTF_DATA OFF CACHE BOOL "" FORCE)
 set(ALSOFT_INSTALL_AMBDEC_PRESETS OFF CACHE BOOL "" FORCE)
+set(LIBTYPE STATIC CACHE STRING "" FORCE)
 set(CMAKE_POLICY_VERSION_MINIMUM 3.5)
 
 FetchContent_Declare(openal-soft
@@ -48,9 +49,12 @@ add_executable(SensoryOverload src/main.cc
         src/system/interaction_system.h
         src/system/interaction_system.cc)
 
+target_compile_features(SensoryOverload PRIVATE cxx_std_20)
 target_link_libraries(SensoryOverload PRIVATE nlohmann_json::nlohmann_json OpenAL::OpenAL)
+target_compile_definitions(SensoryOverload PRIVATE AL_LIBTYPE_STATIC)
 target_link_options(SensoryOverload PRIVATE
         -static-libgcc
         -static-libstdc++
         -static
 )
+set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT SensoryOverload)

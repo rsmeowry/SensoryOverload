@@ -15,7 +15,7 @@ ParseJsons(std::ifstream stream, std::function<TParseable *()> fac,
 
   for (auto v : as_vec) {
     Parseable *o = fac();
-    o->load(v);
+    o->Load(v);
     auto re_cast = reinterpret_cast<TParseable *>(o);
     parsed.emplace(key_getter(re_cast), re_cast);
   }

@@ -46,8 +46,12 @@ int main() {
     nlohmann::json setup_json;
     setup_str >> setup_json;
     state.player_.Load(setup_json);
+    std::string starting_item = "fists";
+    if (setup_json.contains("player")) {
+      starting_item = setup_json["player"].value("starting_item", "fists");
+    }
     state.player_.inventory_.items_.emplace_back(
-        registry.items_[setup_json.value("starting_item", "fists")]);
+        registry.items_[starting_item]);
   } else {
     std::cerr << "failed to load setup.json" << std::endl;
   }

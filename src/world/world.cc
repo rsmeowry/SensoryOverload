@@ -11,6 +11,9 @@ void MapData::Load(DataRegistry *loader, std::string map) {
   std::string tok;
   auto y = 0;
   while (std::getline(str, tok, '\n')) {
+    if (!tok.empty() && tok.back() == '\r') {
+      tok.pop_back();
+    }
     // parsing line
     std::vector<Interactable *> interactables;
     const char *chs = tok.c_str();
