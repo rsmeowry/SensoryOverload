@@ -29,7 +29,7 @@ void Mob::Load(nlohmann::json &obj) {
   damage_ = obj["damage"].get<int8_t>();
 }
 
-void Item::Load(nlohmann::json &obj){
+void Item::Load(nlohmann::json &obj) {
   id_ = obj["id"].get<std::string>();
   name_ = obj["name"].get<std::string>();
   description_ = obj["description"].get<std::string>();

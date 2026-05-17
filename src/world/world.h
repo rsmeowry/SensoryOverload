@@ -11,13 +11,14 @@
 struct MapData {
 private:
   std::vector<std::vector<Interactable *>> map_;
+
 public:
   std::vector<LivingMob> mobs_;
   uint8_t size_;
 
   void Load(DataRegistry *loader, std::string map);
-  Interactable * ObjAt(uint8_t x, uint8_t y) const;
-  void SetObjAt(uint8_t x, uint8_t y, Interactable* obj);
+  Interactable *ObjAt(uint8_t x, uint8_t y) const;
+  void SetObjAt(uint8_t x, uint8_t y, Interactable *obj);
 };
 
 struct GlobalState {

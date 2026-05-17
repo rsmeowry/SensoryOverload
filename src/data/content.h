@@ -6,7 +6,7 @@
 class Parseable {
 public:
   virtual ~Parseable() = default;
-  virtual void Load(nlohmann::json& obj) = 0;
+  virtual void Load(nlohmann::json &obj) = 0;
 };
 
 class Interactable final : public Parseable {
@@ -37,7 +37,7 @@ public:
   ~Effect() override = default;
 };
 
-class Mob final: public Parseable {
+class Mob final : public Parseable {
 public:
   std::string id_;
   int8_t map_x_;
@@ -52,7 +52,7 @@ public:
   ~Mob() override = default;
 };
 
-class Item final: public Parseable {
+class Item final : public Parseable {
 public:
   std::string id_;
   std::string name_;

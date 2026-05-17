@@ -24,7 +24,7 @@ struct SensorState {
 };
 
 struct Inventory {
-  std::vector<Item*> items_;
+  std::vector<Item *> items_;
   uint8_t active_;
 };
 
@@ -34,27 +34,30 @@ struct PlayerState {
   SensorState sensors_;
   Inventory inventory_;
 
-  void Load(const nlohmann::json& obj) {
+  void Load(const nlohmann::json &obj) {
     if (obj.contains("player")) {
       auto p = obj["player"];
       transform_.x_ = p.value("x", 0);
       transform_.y_ = p.value("y", 0);
-      
+
       std::string face = p.value("facing", "South");
-      if (face == "North") transform_.facing_ = North;
-      else if (face == "South") transform_.facing_ = South;
-      else if (face == "West") transform_.facing_ = West;
-      else if (face == "East") transform_.facing_ = East;
-      else transform_.facing_ = South;
+      if (face == "North")
+        transform_.facing_ = North;
+      else if (face == "South")
+        transform_.facing_ = South;
+      else if (face == "West")
+        transform_.facing_ = West;
+      else if (face == "East")
+        transform_.facing_ = East;
+      else
+        transform_.facing_ = South;
 
       health_.current_ = p.value("health", 100);
       health_.max_ = p.value("max_health", 100);
     }
   }
 
-  bool IsAlive() const {
-    return health_.current_ > 0;
-  }
+  bool IsAlive() const { return health_.current_ > 0; }
 };
 
 #endif // SENSORYOVERLOAD_PLAYER_H
