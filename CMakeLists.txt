@@ -29,7 +29,11 @@ add_executable(SensoryOverload src/main.cc
         src/system/mob_system.h
         src/system/mob_system.cc
         src/system/render_system.h
-        src/system/render_system.cc)
+        src/system/render_system.cc
+        src/system/audio_system.h
+        src/system/audio_system.cc
+        src/system/interaction_system.h
+        src/system/interaction_system.cc)
 
 target_link_libraries(SensoryOverload PRIVATE nlohmann_json::nlohmann_json)
 target_link_options(SensoryOverload PRIVATE
